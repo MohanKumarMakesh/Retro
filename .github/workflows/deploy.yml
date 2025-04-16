@@ -1,0 +1,33 @@
+name: Deploy Vite App to S3
+
+on:
+  push:
+    branches:
+      - main # Trigger the workflow on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: self-hosted # Use a self-hosted runner
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20 # Use Node.js version 18
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Build the Vite app
+      - name: Build Vite App
+        run: npm run build
+
+      # Step 5: Sync the `dist` folder with the S3 bucket
+      - name: Sync with S3 Bucket
+        run: |
+          aws s3 sync dist/ s3://retro-nft --delete
