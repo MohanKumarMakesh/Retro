@@ -19,7 +19,18 @@ jobs:
         with:
           node-version: 20 # Use Node.js version 20
 
-      # Step 3: Check for AWS CLI and Install if Missing
+      # Step 3: Install unzip if Missing
+      - name: Install unzip if Missing
+        run: |
+          if ! command -v unzip &> /dev/null; then
+            echo "unzip not found. Installing..."
+            sudo apt-get update
+            sudo apt-get install -y unzip
+          else
+            echo "unzip is already installed."
+          fi
+
+      # Step 4: Check for AWS CLI and Install if Missing
       - name: Install AWS CLI if Missing
         run: |
           if ! command -v aws &> /dev/null; then
@@ -31,15 +42,16 @@ jobs:
             echo "AWS CLI is already installed."
           fi
 
-      # Step 4: Install dependencies
+      # Step 5: Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # Step 5: Build the Vite app
+      # Step 6: Build the Vite app
       - name: Build Vite App
         run: npm run build
 
-      # Step 6: Sync the `dist` folder with the S3 bucket
+      # Step 7: Sync the `dist` folder with the S3 bucket
       - name: Sync with S3 Bucket
+        env:
         run: |
           aws s3 sync dist/ s3://retro-nft --delete
