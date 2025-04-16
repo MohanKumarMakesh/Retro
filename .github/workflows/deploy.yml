@@ -52,6 +52,5 @@ jobs:
 
       # Step 7: Sync the `dist` folder with the S3 bucket
       - name: Sync with S3 Bucket
-        env:
         run: |
           aws s3 sync dist/ s3://retro-nft --delete
