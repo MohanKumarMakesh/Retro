@@ -17,17 +17,29 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20 # Use Node.js version 18
+          node-version: 20 # Use Node.js version 20
 
-      # Step 3: Install dependencies
+      # Step 3: Check for AWS CLI and Install if Missing
+      - name: Install AWS CLI if Missing
+        run: |
+          if ! command -v aws &> /dev/null; then
+            echo "AWS CLI not found. Installing..."
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+          else
+            echo "AWS CLI is already installed."
+          fi
+
+      # Step 4: Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # Step 4: Build the Vite app
+      # Step 5: Build the Vite app
       - name: Build Vite App
         run: npm run build
 
-      # Step 5: Sync the `dist` folder with the S3 bucket
+      # Step 6: Sync the `dist` folder with the S3 bucket
       - name: Sync with S3 Bucket
         run: |
           aws s3 sync dist/ s3://retro-nft --delete
